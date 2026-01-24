@@ -1,8 +1,9 @@
-from utils import get_best_device, get_model
-from prompting import build_prompt, generate_text
+from src.utils import get_best_device, get_model
+from src.prompting import build_prompt, generate_text
 import torch
 from transformers import AutoTokenizer
 
+# run like this: python -m src.tests.testing_conv
 
 def test_chat_template(model_name, device):
     """Test the chat template application of the tokenizer."""
