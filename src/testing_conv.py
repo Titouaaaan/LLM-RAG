@@ -75,5 +75,45 @@ def test_thinking_mode(model_name, device):
     print("=== Without thinking (enable_thinking=False) ===")
     print(prompt_no_think)
 
+def test_different_formats():
+    models = {
+    "SmolLM2-1.7B": "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+    "Qwen3-0.6B": "Qwen/Qwen3-0.6B",
+    "Phi-Mini-1.5B": "microsoft/Phi-3-mini-4k-instruct",    
+}
+
+
+    messages = [{"role": "user", "content": "Hello!"}]
+
+    for name, model_name in models.items():
+        print("=" * 80)
+        print(f"Model: {name}")
+        
+        tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+
+        print("\n--- Chat template ---")
+        print(tokenizer.chat_template)
+
+        formatted = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=False,
+        )
+
+        formatted_gen = tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+
+        print("\n--- Formatted (no generation prompt) ---")
+        print(repr(formatted))
+
+        print("\n--- Formatted (with generation prompt) ---")
+        print(repr(formatted_gen))
+
 test_chat_template("HuggingFaceTB/SmolLM2-1.7B-Instruct", get_best_device())
+print("\n" + "="*80 + "\n")
 test_thinking_mode("Qwen/Qwen3-0.6B", get_best_device())
+print("\n" + "="*80 + "\n")
+test_different_formats()
