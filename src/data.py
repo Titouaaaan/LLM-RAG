@@ -3,6 +3,7 @@ from typing import List, Dict
 import pyterrier as pt
 import random
 from tqdm import tqdm
+import pandas as pd
 
 # Helper functions to get document text from index (uses cached meta_index)
 def get_doc_text(meta_index, doc_id: str) -> str:
@@ -70,14 +71,25 @@ def generate_queries_for_document(
     doc_excerpt = document[:max_doc_length]
 
     # Clear, instruction-following prompt
-    user_prompt = (
-        f"Given the following document, generate {num_queries} concise search queries "
-        f"that a user might type to find this document.\n"
-        f"Each query must be on its own line.\n"
-        f"Do not number the queries.\n\n"
-        f"Document:\n{doc_excerpt}\n\n"
-        f"Queries:"
-    )
+    user_prompt = f"""
+        You are generating search engine queries.
+
+        Generate {num_queries} search queries that could retrieve the document below.
+
+        Rules:
+        - Each query must be 3 to 8 words
+        - Use keyword-style phrases (not full sentences)
+        - Do NOT use question words (how, what, why, when, where)
+        - Do NOT use punctuation
+        - Do NOT number the queries
+        - One query per line
+        - Prefer noun phrases over verbs
+
+        Document:
+        {doc_excerpt}
+
+        Queries:
+        """.strip()
 
     # Build chat-style prompt (important for instruct models)
     prompt = build_prompt(
@@ -207,3 +219,51 @@ def filter_synthetic_pairs(
         filtered.append(pair)
 
     return filtered
+
+def create_combined_training_data(
+    index_ref,
+    meta_index,
+    qrels_df: pd.DataFrame,
+    queries_df: pd.DataFrame,
+    synthetic_pairs: List[Dict],
+) -> List[Dict]:
+    """
+    Combine real qrels with synthetic pairs.
+
+    Args:
+        index_ref: PyTerrier index reference
+        qrels_df: Original relevance judgments
+        queries_df: Original queries
+        synthetic_pairs: Synthetically generated pairs
+
+    Returns:
+        Combined list of training pairs
+    """
+    training_data = []
+
+    # Add real pairs from qrels
+    for _, row in qrels_df.iterrows():
+        qid = row["qid"]
+        doc_id = row["docno"]
+
+        query_rows = queries_df[queries_df["qid"] == qid]["query"].values
+        if len(query_rows) == 0:
+            continue
+
+        doc_text = get_doc_text(meta_index, doc_id)
+        if not doc_text:
+            continue
+
+        training_data.append(
+            {
+                "query": query_rows[0],
+                "doc_id": doc_id,
+                "document": doc_text,
+                "source": "qrels",  # From original dataset
+            }
+        )
+
+    # Add synthetic pairs
+    training_data.extend(synthetic_pairs)
+
+    return training_data
