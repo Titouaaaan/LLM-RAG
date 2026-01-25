@@ -1,7 +1,7 @@
 from src.utils import get_model, get_best_device
 from src.prompting import build_prompt, generate_text
 from src.icl import build_few_shot_prompt
-from src.chain_of_thought import self_consistency_classify, extract_answer_from_cot, build_cot_prompt
+from src.chain_of_thought import self_consistency_classify, extract_answer_from_cot, build_cot_prompt, self_consistency_cot
 
 device = get_best_device()
 model, tokenizer = get_model(
@@ -297,11 +297,9 @@ test_data = [
 num_consistency_samples = 5
 
 # Compare the two approaches
-
 single_correct = 0
 consistency_correct = 0
 for text, expected in test_data:
-    # ---------- Single-shot ----------
     single_prompt = build_prompt(
         tokenizer=tokenizer,
         user=few_shot_prompt.format(text=text),
@@ -325,7 +323,6 @@ for text, expected in test_data:
     if expected in single_response:
         single_correct += 1
 
-    # ---------- Self-consistency ----------
     label, counts = self_consistency_classify(
         prompt=single_prompt,
         tokenizer=tokenizer,
@@ -346,7 +343,29 @@ for text, expected in test_data:
     print(f"Self-consistency votes: {counts}")
     print(f"Self-consistency result: {label}")
 
-# ---------- Summary ----------
 print("\n==== Summary ====")
 print(f"Single-shot accuracy: {single_correct}/{len(test_data)}")
 print(f"Self-consistency accuracy: {consistency_correct}/{len(test_data)}")
+
+print("\n---- Now testing self-consistency with chain-of-thought ----\n")
+
+# Test CoT + Self-Consistency
+
+for question, expected in zip(reasoning_questions, expected_answers):
+    answer, votes = self_consistency_cot(
+        question=question,
+        cot_examples=cot_examples,
+        tokenizer=tokenizer,
+        model=model,
+        device=device,
+        num_samples=num_consistency_samples,
+    )
+
+    print("=" * 80)
+    print(f"Q: {question}")
+    print(f"Votes: {votes}")
+    print(f"Answer: {answer} (expected: {expected})")
+
+    correct = "✓" if answer == expected else "✗"
+    print(f"Result: {correct}")
+    print()
