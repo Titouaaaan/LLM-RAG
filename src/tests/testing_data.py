@@ -1,7 +1,8 @@
 import pyterrier as pt
+import json
 from pathlib import Path
 import shutil
-from src.data import get_doc_text, get_text_from_index
+from src.data import create_combined_training_data, get_doc_text, get_text_from_index
 from src.utils import get_best_device, get_model
 from src.data import generate_queries_for_document, generate_training_pairs, filter_synthetic_pairs
 
@@ -130,3 +131,33 @@ filtered_pairs = filter_synthetic_pairs(synthetic_pairs)
 
 print(f"Filtered: {len(synthetic_pairs)} -> {len(filtered_pairs)} pairs")
 print(f"Kept: {100 * len(filtered_pairs) / max(1, len(synthetic_pairs)):.1f}%")
+
+# Create combined training data
+combined_training = create_combined_training_data(
+    index_ref, meta_index, qrels_df, queries_df, filtered_pairs
+)
+
+print(f"Combined training data: {len(combined_training)} pairs")
+print(f"  - From qrels: {sum(1 for p in combined_training if p['source'] == 'qrels')}")
+print(
+    f"  - Synthetic: {sum(1 for p in combined_training if p['source'] == 'synthetic')}"
+)
+
+# Prepare data for saving (don't include full document text to save space)
+training_export = []
+for pair in combined_training:
+    training_export.append(
+        {
+            "query": pair["query"],
+            "doc_id": pair["doc_id"],
+            "source": pair["source"],
+        }
+    )
+
+output_dir = Path("./outputs/practical-04")
+output_dir.mkdir(parents=True, exist_ok=True)
+output_path = output_dir / "training_data_for_splade.json"
+with open(output_path, "w", encoding="utf-8") as f:
+    json.dump(training_export, f, indent=2)
+
+print(f"Saved {len(training_export)} training pairs to {output_path}")
