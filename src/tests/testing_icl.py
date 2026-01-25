@@ -281,3 +281,72 @@ for text, expected in zip(test_questions, expected_labels):
     print(f"Votes: {counts}")
     print(f"Result: {label} | Expected: {expected}")
     print()
+
+print('\n---- Comparing single-shot and self-consistency ----\n')
+
+# Create a test dataset
+test_data = [
+    ("How do I install Python on Mac?", "question"),
+    ("This keyboard is absolutely terrible.", "complaint"),
+    ("What programming language should I learn first?", "question"),
+    ("The customer service is useless.", "complaint"),
+    ("Can you explain how databases work?", "question"),
+    ("I wasted hours on this broken software.", "complaint"),
+]
+# Configuration
+num_consistency_samples = 5
+
+# Compare the two approaches
+
+single_correct = 0
+consistency_correct = 0
+for text, expected in test_data:
+    # ---------- Single-shot ----------
+    single_prompt = build_prompt(
+        tokenizer=tokenizer,
+        user=few_shot_prompt.format(text=text),
+        system=(
+            "You are a text classification assistant.\n"
+            "Reply with exactly ONE word.\n"
+            "Valid labels: question, complaint."
+        ),
+    )
+
+    single_response = generate_text(
+        tokenizer=tokenizer,
+        model=model,
+        device=device,
+        prompt=single_prompt,
+        max_new_tokens=10,
+        temperature=0.1,
+        do_sample=False,
+    )[0].strip().lower()
+
+    if expected in single_response:
+        single_correct += 1
+
+    # ---------- Self-consistency ----------
+    label, counts = self_consistency_classify(
+        prompt=single_prompt,
+        tokenizer=tokenizer,
+        model=model,
+        device=device,
+        num_samples=num_consistency_samples,
+        temperature=0.7,
+        valid_labels=["question", "complaint"],
+    )
+
+    if label == expected:
+        consistency_correct += 1
+
+    print("-" * 80)
+    print(f"Text: {text}")
+    print(f"Expected: {expected}")
+    print(f"Single-shot: {single_response}")
+    print(f"Self-consistency votes: {counts}")
+    print(f"Self-consistency result: {label}")
+
+# ---------- Summary ----------
+print("\n==== Summary ====")
+print(f"Single-shot accuracy: {single_correct}/{len(test_data)}")
+print(f"Self-consistency accuracy: {consistency_correct}/{len(test_data)}")
