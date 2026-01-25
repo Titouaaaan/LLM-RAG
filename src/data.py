@@ -13,6 +13,7 @@ def get_doc_text(meta_index, doc_id: str) -> str:
         if docid >= 0:
             return meta_index.getItem("text", docid)
     except Exception:
+        print(f"Warning: Could not retrieve text for doc_id {doc_id}")
         pass
     return ""
 
@@ -267,3 +268,47 @@ def create_combined_training_data(
     training_data.extend(synthetic_pairs)
 
     return training_data
+
+def ir_get_text_from_index(
+    index: pt.terrier.TerrierIndex, doc_ids: List[str]
+) -> Dict[str, str]:
+    """
+    Retrieve document text from the index metadata.
+
+    Args:
+        index: PyTerrier index reference
+        doc_ids: List of document IDs
+
+    Returns:
+        Dict mapping doc_id -> text
+    """
+    meta_index = index.meta_index()
+
+    result = {}
+    for doc_id in doc_ids:
+        try:
+            # Get internal docid from docno
+            docid = meta_index.getDocument("docno", doc_id)
+            if docid >= 0:
+                text = meta_index.getItem("text", docid)
+                result[doc_id] = text
+        except Exception:
+            pass  # Document not found
+
+    return result
+
+
+# Helper for single document lookup
+def ir_get_doc_text(index, doc_id: str) -> str:
+    """Get text for a single document from the index."""
+    texts = ir_get_text_from_index(index, [doc_id])
+    return texts.get(doc_id, "")
+
+
+def ir_doc_exists_in_index(index, doc_id: str) -> bool:
+    """Check if a document exists in the index (without fetching text)."""
+    meta_index = index.meta_index()
+    try:
+        return meta_index.getDocument("docno", doc_id) >= 0
+    except Exception:
+        return False
