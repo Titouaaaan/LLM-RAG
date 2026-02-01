@@ -6,28 +6,40 @@ from tqdm import tqdm
 import pandas as pd
 
 # Helper functions to get document text from index (uses cached meta_index)
-def get_doc_text(meta_index, doc_id: str) -> str:
+def get_doc_text(pt_index, doc_id: str) -> str:
     """Retrieve document text from PyTerrier index metadata."""
     try:
-        docid = meta_index.getDocument("docno", doc_id)
+        # PyTerrier metadata retrieval - docid is the internal ID
+        metadata = pt_index.getMetaIndex()
+        docid = metadata.getDocument("docno", doc_id)
+        
         if docid >= 0:
-            return meta_index.getItem("text", docid)
-    except Exception:
-        print(f"Warning: Could not retrieve text for doc_id {doc_id}")
-        pass
+            text = metadata.getItem("text", docid)
+            return text if text else ""
+    except Exception as e:
+        print(f"Warning: Could not retrieve text for doc_id {doc_id}: {e}")
+    
     return ""
 
 
-def get_text_from_index(meta_index, doc_ids: list[str]) -> dict[str, str]:
+def get_text_from_index(pt_index, doc_ids: list[str]) -> dict[str, str]:
     """Retrieve text for multiple documents from the index metadata."""
     result = {}
-    for doc_id in doc_ids:
-        try:
-            docid = meta_index.getDocument("docno", doc_id)
-            if docid >= 0:
-                result[doc_id] = meta_index.getItem("text", docid)
-        except Exception:
-            pass
+    try:
+        metadata = pt_index.getMetaIndex()
+        
+        for doc_id in doc_ids:
+            try:
+                docid = metadata.getDocument("docno", doc_id)
+                if docid >= 0:
+                    text = metadata.getItem("text", docid)
+                    if text:
+                        result[doc_id] = text
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"Error accessing metadata index: {e}")
+    
     return result
 
 def safe_corpus_iter(corpus_iter):
