@@ -1,5 +1,5 @@
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoModelForMaskedLM,AutoTokenizer
 
 def get_best_device():
     """Returns the best device on this computer"""
@@ -17,7 +17,7 @@ def get_best_device():
     return device
 
 
-def get_model(model_name, device):
+def get_model(model_name, device, is_splade=False):
     '''
     Docstring for get_model
     
@@ -46,6 +46,13 @@ def get_model(model_name, device):
             device_map="auto",
         )
         print(f"Model loaded: {model_name} (pre-quantized)")
+    elif is_splade:
+        model = AutoModelForMaskedLM.from_pretrained(
+            model_name,
+            dtype=torch.float16,
+        )
+        model = model.to(device)
+        print(f"MLM Model loaded: {model_name} on {device}")
     else:
         model = AutoModelForCausalLM.from_pretrained(
             model_name,
