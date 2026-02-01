@@ -170,3 +170,10 @@ if training_triplets:
     print(f"  Query: {training_triplets[0]['query'][:60]}...")
     print(f"  Positive: {training_triplets[0]['positive'][:60]}...")
     print(f"  Num negatives: {len(training_triplets[0]['negatives'])}")
+
+triplets_path = Path("./outputs/practical-04/splade_training_triplets.json")
+
+with open(triplets_path, "w", encoding="utf-8") as f:
+    json.dump(training_triplets, f, indent=2, ensure_ascii=False)
+
+print(f"Saved {len(training_triplets)} training triplets to {triplets_path}")
