@@ -1,4 +1,4 @@
-from transformers import AutoModelForMaskedLM, AutoTokenizer
+from transformers import AutoModelForMaskedLM, AutoTokenizer, AutoModel
 import torch
 from torch import nn
 import torch.nn.functional as F
@@ -295,3 +295,69 @@ def train_splade(
 
     encoder.eval()
     print("Training complete!")
+
+class CrossEncoderTeacher(nn.Module):
+    """
+    Cross-encoder for scoring query-document pairs.
+    """
+
+    def __init__(self, model_name: str = "distilbert-base-uncased", device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name).to(device)
+        self.classifier = nn.Linear(self.model.config.hidden_size, 1).to(device)
+
+    def forward(
+        self,
+        queries: List[str],
+        documents: List[str],
+    ) -> torch.Tensor:
+        """
+        Score query-document pairs.
+
+        Args:
+            queries: List of queries
+            documents: List of documents (same length)
+
+        Returns:
+            Tensor of shape (batch_size,) with relevance scores
+        """
+        assert len(queries) == len(documents), "Queries and documents must match in length"
+
+        # Concatenate query and doc with [SEP]
+        pairs = [q + " [SEP] " + d for q, d in zip(queries, documents)]
+
+        # Tokenize
+        inputs = self.tokenizer(
+            pairs,
+            padding=True,
+            truncation=True,
+            max_length=256,
+            return_tensors="pt"
+        ).to(self.device)
+        # Forward through the model
+        outputs = self.model(**inputs)
+        cls_output = outputs.last_hidden_state[:, 0, :]  
+        scores = self.classifier(cls_output).squeeze(-1)  
+
+        return scores
+
+def distillation_loss(
+    student_scores: torch.Tensor,
+    teacher_scores: torch.Tensor,
+    temperature: float = 1.0,
+) -> torch.Tensor:
+    """
+    Compute distillation loss (MSE or KL divergence).
+
+    Args:
+        student_scores: Student (SPLADE) scores
+        teacher_scores: Teacher (cross-encoder) scores
+        temperature: Temperature for softening distributions (KL only)
+
+    Returns:
+        Distillation loss
+    """
+    # Simple MSE between scores
+    return F.mse_loss(student_scores, teacher_scores.detach())
