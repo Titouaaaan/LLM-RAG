@@ -4,6 +4,7 @@ from torch import nn
 import torch.nn.functional as F
 from typing import List, Tuple, Dict
 from tqdm import tqdm
+import pandas as pd
 
 def compute_splade_representation(
     text: str,
@@ -361,3 +362,31 @@ def distillation_loss(
     """
     # Simple MSE between scores
     return F.mse_loss(student_scores, teacher_scores.detach())
+
+def retriever_to_results(
+    retriever_fn,
+    queries_df: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+    Convert a retriever function to a results DataFrame for ir-measures.
+
+    Args:
+        retriever_fn: Function that takes a query and returns [(doc_id, score)]
+        queries_df: DataFrame with queries
+
+    Returns:
+        DataFrame with columns [qid, docno, score]
+    """
+    all_results = []
+
+    for _, query_row in tqdm(
+        queries_df.iterrows(), desc="Retrieving", total=len(queries_df)
+    ):
+        qid = query_row["qid"]
+        query_text = query_row["query"]
+
+        results = retriever_fn(query_text)
+        for doc_id, score in results:
+            all_results.append({"qid": qid, "docno": doc_id, "score": score})
+
+    return pd.DataFrame(all_results)

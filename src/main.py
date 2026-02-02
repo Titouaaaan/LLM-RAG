@@ -3,9 +3,13 @@ import torch
 from src.data import ir_get_text_from_index
 from src.utils import get_best_device, get_model
 from src.rag import RAGPipeline
-from src.splade import SPLADEEncoder
+from src.splade import SPLADEEncoder, retriever_to_results
 from pathlib import Path
+from typing import List, Tuple
 import pyterrier as pt
+from src.info_retrieval import to_ir_measures_qrels, to_ir_measures_run
+import ir_measures
+
 
 device = get_best_device()
 
@@ -69,8 +73,8 @@ model_exists = (splade_output_dir / "config.json").exists()
 
 else:
     print("No custom trained SPLADE model found — using default model")
-    # and proceeding with the default initialized model
- """
+    # and proceeding with the default initialized model """
+
 rag = RAGPipeline(
     retriever=splade_encoder,
     device=device,
@@ -99,3 +103,46 @@ for doc in result["retrieved_docs"]:
 
 print(f"\n{'=' * 80}")
 print(f"Generated answer:\n{result['generated_answer']}")
+
+def splade_retriever(query: str) -> List[Tuple[str, float]]:
+    return rag.retrieve(query, top_k=20)
+
+bm25 = pt.BatchRetrieve(
+    index,
+    wmodel="BM25",
+    controls={"ql.type": "literal"}  # literal mode disables operator parsing
+)
+metrics = [ir_measures.RR, ir_measures.Recall@1, ir_measures.Recall@5, ir_measures.Recall@10]
+qrels_ir = to_ir_measures_qrels(qrels_df)
+
+
+test_queries = queries_df.tail(20)  # Use last queries as test
+splade_results = retriever_to_results(splade_retriever, test_queries)
+splade_metrics = ir_measures.calc_aggregate(
+    metrics, qrels_ir, to_ir_measures_run(splade_results)
+)
+
+print("\n=== SPLADE Results ===")
+for metric, value in splade_metrics.items():
+    print(f"  {metric}: {value:.4f}")
+
+# Compare with BM25
+bm25_results = bm25.transform(test_queries[["qid", "query"]])
+bm25_metrics = ir_measures.calc_aggregate(
+    metrics, qrels_ir, to_ir_measures_run(bm25_results)
+)
+
+print("\n=== BM25 Results ===")
+for metric, value in bm25_metrics.items():
+    print(f"  {metric}: {value:.4f}")
+
+# Comparison table
+print("\n=== Comparison ===")
+print(f"{'Metric':<12} {'BM25':>10} {'SPLADE':>10} {'Diff':>10}")
+print("-" * 44)
+for metric in splade_metrics:
+    bm25_val = bm25_metrics[metric]
+    splade_val = splade_metrics[metric]
+    diff = splade_val - bm25_val
+    diff_str = f"+{diff:.4f}" if diff > 0 else f"{diff:.4f}"
+    print(f"{metric!s:<12} {bm25_val:>10.4f} {splade_val:>10.4f} {diff_str:>10}")
