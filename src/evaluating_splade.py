@@ -57,37 +57,46 @@ index = pt.IndexFactory.of(index_ref, memory={"meta": True})
 
 # SPLADE encoder
 splade_baseline_model = "distilbert-base-uncased"
-#splade_encoder = SPLADEEncoder(splade_baseline_model)
-splade_encoder = SPLADEEncoder("naver/splade-cocondenser-ensembledistil")
-splade_encoder = splade_encoder.to(device)
+splade_encoder_trained = SPLADEEncoder(splade_baseline_model)
+splade_encoder_loaded = SPLADEEncoder("naver/splade-cocondenser-ensembledistil")
+splade_encoder_trained, splade_encoder_loaded = splade_encoder_trained.to(device), splade_encoder_loaded.to(device)
 
 splade_output_dir = Path("./outputs/practical-04/splade_model")
 
 model_exists = (splade_output_dir / "config.json").exists()
 
-""" if model_exists:
+if model_exists:
     print("Found existing SPLADE model — loading from disk")
 
-    splade_encoder.model.from_pretrained(splade_output_dir)
-    splade_encoder.tokenizer.from_pretrained(splade_output_dir)
-
+    splade_encoder_trained.model.from_pretrained(splade_output_dir)
+    splade_encoder_trained.tokenizer.from_pretrained(splade_output_dir)
 else:
     print("No custom trained SPLADE model found — using default model")
-    # and proceeding with the default initialized model """
+    # and proceeding with the default initialized model 
 
-rag = RAGPipeline(
-    retriever=splade_encoder,
+rag_trained = RAGPipeline(
+    retriever=splade_encoder_trained,
     device=device,
     generator=gen_model,
     generator_tokenizer=gen_tokenizer,
-    pt_index=index,
+    pt_index=index.metaIndex,
+    doc_ids=doc_id_list,
+    top_k=3,
+)
+
+rag_loaded = RAGPipeline(
+    retriever=splade_encoder_loaded,
+    device=device,
+    generator=gen_model,
+    generator_tokenizer=gen_tokenizer,
+    pt_index=index.metaIndex,
     doc_ids=doc_id_list,
     top_k=3,
 )
 
 # Test the RAG pipeline
 test_query = "what is ram in computers?"
-result = rag(test_query)
+result = rag_trained(test_query)
 
 print(f"Question: {result['query']}")
 print(f"\n{'=' * 80}")
@@ -104,7 +113,10 @@ for doc in result["retrieved_docs"]:
 print(f"\n{'=' * 80}")
 print(f"Generated answer:\n{result['generated_answer']}")
 
-def splade_retriever(query: str) -> List[Tuple[str, float]]:
+# skip printing for the loaded rag pipeline for brevity
+result_loaded = rag_loaded(test_query)
+
+def splade_retriever(rag, query: str) -> List[Tuple[str, float]]:
     return rag.retrieve(query, top_k=20)
 
 bm25 = pt.BatchRetrieve(
@@ -117,12 +129,12 @@ qrels_ir = to_ir_measures_qrels(qrels_df)
 
 
 test_queries = queries_df.tail(20)  # Use last queries as test
-splade_results = retriever_to_results(splade_retriever, test_queries)
+splade_results = retriever_to_results(lambda q: splade_retriever(rag_trained, q), test_queries)
 splade_metrics = ir_measures.calc_aggregate(
     metrics, qrels_ir, to_ir_measures_run(splade_results)
 )
 
-print("\n=== SPLADE Results ===")
+print("\n=== SPLADE Trained Results ===")
 for metric, value in splade_metrics.items():
     print(f"  {metric}: {value:.4f}")
 
@@ -136,8 +148,8 @@ print("\n=== BM25 Results ===")
 for metric, value in bm25_metrics.items():
     print(f"  {metric}: {value:.4f}")
 
-# Comparison table
-print("\n=== Comparison ===")
+# Comparison table: BM25 vs SPLADE Trained
+print("\n=== Comparison: BM25 vs SPLADE Trained ===")
 print(f"{'Metric':<12} {'BM25':>10} {'SPLADE':>10} {'Diff':>10}")
 print("-" * 44)
 for metric in splade_metrics:
@@ -146,3 +158,34 @@ for metric in splade_metrics:
     diff = splade_val - bm25_val
     diff_str = f"+{diff:.4f}" if diff > 0 else f"{diff:.4f}"
     print(f"{metric!s:<12} {bm25_val:>10.4f} {splade_val:>10.4f} {diff_str:>10}")
+
+# Evaluate SPLADE loaded model
+print("\n=== SPLADE Loaded Results ===")
+splade_loaded_results = retriever_to_results(lambda q: splade_retriever(rag_loaded, q), test_queries)
+splade_loaded_metrics = ir_measures.calc_aggregate(
+    metrics, qrels_ir, to_ir_measures_run(splade_loaded_results)
+)
+
+for metric, value in splade_loaded_metrics.items():
+    print(f"  {metric}: {value:.4f}")
+
+# Comparison table: BM25 vs SPLADE Loaded
+print("\n=== Comparison: BM25 vs SPLADE Loaded ===")
+print(f"{'Metric':<12} {'BM25':>10} {'SPLADE':>10} {'Diff':>10}")
+print("-" * 44)
+for metric in splade_loaded_metrics:
+    bm25_val = bm25_metrics[metric]
+    splade_val = splade_loaded_metrics[metric]
+    diff = splade_val - bm25_val
+    diff_str = f"+{diff:.4f}" if diff > 0 else f"{diff:.4f}"
+    print(f"{metric!s:<12} {bm25_val:>10.4f} {splade_val:>10.4f} {diff_str:>10}")
+
+# Three-way comparison: BM25 vs SPLADE Trained vs SPLADE Loaded
+print("\n=== Three-Way Comparison: BM25 vs SPLADE Trained vs SPLADE Loaded ===")
+print(f"{'Metric':<12} {'BM25':>10} {'Trained':>10} {'Loaded':>10}")
+print("-" * 44)
+for metric in splade_metrics:
+    bm25_val = bm25_metrics[metric]
+    trained_val = splade_metrics[metric]
+    loaded_val = splade_loaded_metrics[metric]
+    print(f"{metric!s:<12} {bm25_val:>10.4f} {trained_val:>10.4f} {loaded_val:>10.4f}")
