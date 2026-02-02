@@ -69,13 +69,13 @@ and put it in the folder `./outputs/practical-04/index_lotte`.
 
 Make sure you have an active virtual environment with the proper dependencies installed (everything is in the `requirements.txt` file).
 
-### Run Single Query with Full CoT
+### Asking questions!
 
 ```bash
 python -m src.main
 ```
 
-This will:
+This scripts allows you to ask questions and get answers. To answer, the LLM goes through the following steps:
 
 - Rewrite the query using CoT decomposition,
 
@@ -87,4 +87,10 @@ This will:
 
 - Compare answers and output the final selection with reasoning.
 
-At first an exmaple runs just to see how it works, it will probably be removed because it was mostly for debugging.
+Ask a questions, wait for the answer and see for yourself! It's also interesting to see the reasoning of the model to see how it decides on the answer.
+
+> At first you see an exmaple that runs on its own just to see how it works, it will probably be removed because it was mostly for debugging.
+
+### Notes
+
+This project was done for my LLM class, it can for sure be improved and will be in the future. It is def not perfect or optimized, this is mostly experimental :)
