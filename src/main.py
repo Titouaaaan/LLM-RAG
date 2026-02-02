@@ -468,12 +468,13 @@ class ChainOfThoughtRAG:
         print("\n" + "="*80)
         print("ENHANCED RAG PIPELINE - Interactive Mode")
         print("="*80)
-        print("Type 'quit' to exit, 'verbose' to toggle verbose mode, 'help' for options\n")
+        print("Type 'quit' to exit, 'help' for options\n")
         
         verbose = True
         use_rewrites = True
         use_alternatives = True
-        
+        # wanted to add some options to use rewrites or alternatives but ig not useful at the moment ...
+        # so everything set to true atm
         while True:
             try:
                 user_input = input("\n>>> Your question: ").strip()
@@ -481,27 +482,10 @@ class ChainOfThoughtRAG:
                 if user_input.lower() == 'quit':
                     print("Exiting...")
                     break
-                elif user_input.lower() == 'verbose':
-                    verbose = not verbose
-                    print(f"Verbose mode: {verbose}")
-                    continue
-                elif user_input.lower() == 'rewrites':
-                    use_rewrites = not use_rewrites
-                    print(f"Query rewriting: {use_rewrites}")
-                    continue
-                elif user_input.lower() == 'alternatives':
-                    use_alternatives = not use_alternatives
-                    print(f"Alternative generation: {use_alternatives}")
-                    continue
                 elif user_input.lower() == 'help':
                     print("""
                         Commands:
                         quit           - Exit the program
-                        verbose        - Toggle verbose output (shows all reasoning steps)
-                        rewrites       - Toggle query rewriting
-                        alternatives   - Toggle alternative answer generation
-                        help           - Show this help message
-                        
                         Or just type a question to get an answer!
                                             """)
                     continue
@@ -516,13 +500,12 @@ class ChainOfThoughtRAG:
                     verbose=verbose
                 )
                 
-                # if theres no verbose we just print the final answer
-                if not verbose:
-                    print("\n" + "="*80)
-                    print("FINAL ANSWER:")
-                    print("="*80)
-                    print(result["final_answer"])
-                    print(f"\nQuality Score: {result['final_quality']}/5")
+                
+                print("\n" + "="*80)
+                print("FINAL ANSWER:")
+                print("="*80)
+                print(result["final_answer"])
+                print(f"\nQuality Score: {result['final_quality']}/5")
                 
             except KeyboardInterrupt:
                 print("\n\nInterrupted. Exiting...")
