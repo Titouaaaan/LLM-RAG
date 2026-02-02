@@ -5,8 +5,9 @@ from src.utils import get_best_device, get_model
 from src.splade import SPLADEEncoder
 from pathlib import Path
 from typing import Dict, List
-
+import re
 '''
+The idea is to have something like this
 ENHANCED RAG PIPELINE:
 User question
    ↓
@@ -25,12 +26,6 @@ LLM checks answer quality with reasoning
 class ChainOfThoughtRAG:
     """
     Enhanced CoT RAG pipeline with improved consistency and clarity.
-    
-    Key improvements:
-    - Consistent answer selection logic (uses quality scores throughout)
-    - No redundant retrievals
-    - Clean separation between reasoning and selection
-    - Better tracking of which answer is selected and why
     """
     
     def __init__(self, rag_pipeline: RAGPipeline, model, tokenizer, device):
@@ -41,7 +36,7 @@ class ChainOfThoughtRAG:
         
     def rewrite_query(self, query: str, num_rewrites: int = 2) -> List[str]:
         """
-        Rewrite query using CoT decomposition to find better query formulations.
+        query using CoT decomposition to find better query formulations.
         """
         system_msg = """You are an expert at reformulating search queries to improve retrieval.
                         Given a question, generate alternative phrasings that might retrieve more relevant documents.
@@ -83,7 +78,7 @@ class ChainOfThoughtRAG:
     
     def think_about_retrieval(self, query: str, retrieved_docs: List[Dict]) -> str:
         """
-        Analyze retrieved documents with chain-of-thought reasoning.
+        analyze retrieved documents with chain-of-thought reasoning.
         """
         system_msg = """You are analyzing retrieved documents for a question.
                         Provide chain-of-thought reasoning about:
@@ -128,7 +123,7 @@ class ChainOfThoughtRAG:
     
     def check_answer_quality(self, query: str, answer: str, context: str) -> Dict:
         """
-        Evaluate answer quality with a score (1-5).
+        evaluate answer quality with a score (1-5).
         Returns only the score, not a rewritten version of the answer.
         """
         system_msg = """You are a critical evaluator of AI-generated answers.
@@ -146,12 +141,9 @@ class ChainOfThoughtRAG:
                         IMPORTANT: Do NOT rewrite or paraphrase the answer. Only evaluate it."""
         
         user_msg = f"""Question: {query}
-
-Generated Answer: {answer}
-
-Supporting Context: {context[:500]}...
-
-Evaluate this answer (remember, do NOT rewrite it, only evaluate):"""
+                    Generated Answer: {answer}
+                    Supporting Context: {context[:500]}...
+                    Evaluate this answer (remember, do NOT rewrite it, only evaluate):"""
         
         messages = [
             {"role": "system", "content": system_msg},
@@ -188,7 +180,7 @@ Evaluate this answer (remember, do NOT rewrite it, only evaluate):"""
     def generate_alternative_answer(self, query: str, context: str, 
                                    original_answer: str) -> str:
         """
-        Generate a different answer for diversity and comparison.
+        generate a different answer for diversity and comparison.
         """
         system_msg = """You are a helpful assistant that answers technical questions using provided context.
                         Generate a DIFFERENT answer than the one shown, perhaps:
@@ -200,14 +192,11 @@ Evaluate this answer (remember, do NOT rewrite it, only evaluate):"""
                         Focus on correctness and using the provided context."""
         
         user_msg = f"""Context:
-{context}
-
-Question: {query}
-
-Previous answer (for reference, don't copy):
-{original_answer}
-
-Now generate a different answer to the same question:"""
+                    {context}
+                    Question: {query}
+                    Previous answer (for reference, don't copy):
+                    {original_answer}
+                    Now generate a different answer to the same question:"""
         
         messages = [
             {"role": "system", "content": system_msg},
@@ -238,8 +227,7 @@ Now generate a different answer to the same question:"""
     def compare_answers(self, query: str, answer1: str, answer2: str, 
                        quality1: Dict, quality2: Dict) -> Dict:
         """
-        Compare two answers and provide reasoning (selection is based on quality scores).
-        This is for explanation and understanding, NOT for selection.
+        compare answers only according to their given score
         """
         system_msg = """You are comparing two answers to the same question.
                         Provide:
@@ -251,14 +239,11 @@ Now generate a different answer to the same question:"""
                         Consider correctness, completeness, clarity, and relevance."""
         
         user_msg = f"""Question: {query}
-
-Answer 1 (Quality Score: {quality1['quality_score']}/5):
-{answer1}
-
-Answer 2 (Quality Score: {quality2['quality_score']}/5):
-{answer2}
-
-Compare these answers. Which one has the higher quality score and why might that be?"""
+                    Answer 1 (Quality Score: {quality1['quality_score']}/5):
+                    {answer1}
+                    Answer 2 (Quality Score: {quality2['quality_score']}/5):
+                    {answer2}
+                    Compare these answers. Which one has the higher quality score and why might that be?"""
         
         messages = [
             {"role": "system", "content": system_msg},
@@ -284,7 +269,6 @@ Compare these answers. Which one has the higher quality score and why might that
         if "assistant" in response.lower():
             response = response.split("assistant")[-1].strip()
         
-        # CONSISTENT SELECTION: Use quality scores, not LLM preference
         if quality1["quality_score"] >= quality2["quality_score"]:
             selected_answer = answer1
             selected_quality = quality1["quality_score"]
@@ -305,11 +289,10 @@ Compare these answers. Which one has the higher quality score and why might that
     
     def _extract_quality_score(self, response: str) -> int:
         """
-        Extract quality score from LLM response.
-        Tries multiple patterns to find a score between 1-5.
-        Uses regex for flexible matching.
+        try and find the score given by the llm and try different patterns
+        we do different patterns because sometimes the llm is not very consistent
+        was a pain to get it right but gpt helped a lot :)
         """
-        import re
         
         # Pattern 1: "QUALITY SCORE: X" (as requested in system prompt)
         match = re.search(r'QUALITY\s+SCORE\s*[:=]\s*(\d)', response, re.IGNORECASE)
@@ -355,7 +338,6 @@ Compare these answers. Which one has the higher quality score and why might that
                     if 1 <= score <= 5:
                         return score
         
-        # Default fallback
         print(f"WARNING: Could not extract quality score from response. Defaulting to 2.")
         print(f"Response preview: {response[:200]}...")
         return 2
@@ -363,7 +345,7 @@ Compare these answers. Which one has the higher quality score and why might that
     def process_query(self, query: str, use_rewrites: bool = True, 
                  use_alternatives: bool = True, verbose: bool = True) -> Dict:
         """
-        Full pipeline: rewrite → retrieve → analyze → generate → evaluate → compare.
+        full pipeline to go from query to answer with cot
         """
         result = {
             "original_query": query,
@@ -372,7 +354,7 @@ Compare these answers. Which one has the higher quality score and why might that
             "final_quality": None,
         }
         
-        # STEP 1: Query rewriting
+        # step 1: query rewriting
         if use_rewrites:
             if verbose:
                 print("\n" + "="*80)
@@ -389,7 +371,7 @@ Compare these answers. Which one has the higher quality score and why might that
         else:
             query_variants = [query]
         
-        # STEP 2: Retrieve documents for ALL variants (only once!)
+        # step 2: retrieve documents for Aall query variants
         if verbose:
             print("\n" + "="*80)
             print("STEP 2: Document Retrieval")
@@ -418,7 +400,7 @@ Compare these answers. Which one has the higher quality score and why might that
                 best_score_sum = score_sum
                 best_retrieved = retrieved
         
-        # Get document texts from best retrieval for context
+        # get document texts from best retrieval for context
         doc_texts = self.rag._get_texts([doc_id for doc_id, _ in best_retrieved])
         retrieved_docs = [
             {"doc_id": doc_id, "score": score, "text": doc_texts.get(doc_id, "")}
@@ -429,7 +411,7 @@ Compare these answers. Which one has the higher quality score and why might that
         result["retrieved_docs"] = retrieved_docs
         result["context"] = context
         
-        # STEP 3: Analyze retrieval with CoT (reuse stored retrievals)
+        # step 3: analyze retrieval with cot (reuse stored retrievals)
         if verbose:
             print("\n" + "="*80)
             print("STEP 3: Chain-of-Thought Analysis of Retrieved Documents")
@@ -453,7 +435,7 @@ Compare these answers. Which one has the higher quality score and why might that
 
         result["chain_of_thought"]["retrieval_analysis"] = retrieval_analyses
         
-        # STEP 4: Generate initial answer
+        # step 4: generate initial answer
         if verbose:
             print("\n" + "="*80)
             print("STEP 4: Generate Initial Answer")
@@ -465,7 +447,7 @@ Compare these answers. Which one has the higher quality score and why might that
         if verbose:
             print(initial_answer)
         
-        # STEP 5: Check answer quality
+        # step 5: check answer quality
         if verbose:
             print("\n" + "="*80)
             print("STEP 5: Quality Evaluation (with reasoning)")
@@ -479,7 +461,7 @@ Compare these answers. Which one has the higher quality score and why might that
             print(f"Needs Improvement: {quality_check['needs_improvement']}")
             print(f"\nReasoning:\n{quality_check['reasoning']}")
         
-        # STEP 6-8: Generate alternatives, evaluate, and compare if needed
+        # step 6-8: generate alternatives, evaluate, and compare if needed
         if use_alternatives and quality_check["needs_improvement"]:
             if verbose:
                 print("\n" + "="*80)
@@ -493,7 +475,7 @@ Compare these answers. Which one has the higher quality score and why might that
             if verbose:
                 print(alternative_answer)
             
-            # STEP 7: Check alternative quality
+            # step 7: check alternative quality
             if verbose:
                 print("\n" + "="*80)
                 print("STEP 7: Evaluating Alternative Answer")
@@ -506,7 +488,7 @@ Compare these answers. Which one has the higher quality score and why might that
                 print(f"Quality Score: {alt_quality['quality_score']}/5")
                 print(f"\nReasoning:\n{alt_quality['reasoning']}")
             
-            # STEP 8: Compare and select best (based on quality scores)
+            # step 8: compare and select best (based on quality scores)
             if verbose:
                 print("\n" + "="*80)
                 print("STEP 8: Comparing Answers and Selecting Best")
@@ -534,9 +516,6 @@ Compare these answers. Which one has the higher quality score and why might that
         return result
     
     def interactive_loop(self):
-        """
-        Interactive mode for asking questions.
-        """
         print("\n" + "="*80)
         print("ENHANCED RAG PIPELINE - Interactive Mode")
         print("="*80)
@@ -554,12 +533,10 @@ Compare these answers. Which one has the higher quality score and why might that
                     print("Exiting...")
                     break
                 elif user_input.lower() == 'help':
-                    print("""
-Commands:
-  quit           - Exit the program
-  help           - Show this help message
-  Or just type a question to get an answer!
-                    """)
+                    print("""Commands:
+                            quit           - Exit the program
+                            help           - Show this help message
+                            else ask a quesiton and get an answer!""")
                     continue
                 elif not user_input:
                     continue
@@ -608,15 +585,12 @@ if __name__ == "__main__":
     query_ids = set(queries_df["qid"].tolist())
     qrels_df = qrels_df[qrels_df["qid"].isin(query_ids)].copy()
 
-    # Get the set of relevant document IDs
     relevant_doc_ids = set(qrels_df["docno"].tolist())
     doc_id_list = list(relevant_doc_ids)
 
-    # Initialize SPLADE encoder
     splade_encoder = SPLADEEncoder("naver/splade-cocondenser-ensembledistil")
     splade_encoder = splade_encoder.to(device)
 
-    # Initialize RAG pipeline
     rag = RAGPipeline(
         retriever=splade_encoder,
         device=device,
@@ -627,10 +601,10 @@ if __name__ == "__main__":
         top_k=3,
     )
 
-    # Initialize enhanced CoT pipeline
     cot_rag = ChainOfThoughtRAG(rag, model, tokenizer, device)
 
-    # Example 1: Single query with full chain-of-thought
+    # run a forced exmaple here, will probably remove this later
+    # but useful when running code just to test things
     print("\n" + "="*80)
     print("EXAMPLE 1: Single Query with Full Chain-of-Thought")
     print("="*80)
@@ -650,7 +624,7 @@ if __name__ == "__main__":
     print(f"\nFinal Answer:\n{result['final_answer']}")
     print(f"\nQuality Score: {result['final_quality']}/5")
     
-    # Interactive mode
+    # the main interactive loop for the user
     print("\n\n" + "="*80)
     print("Starting Interactive Loop")
     print("="*80)

@@ -1,48 +1,22 @@
-"""
-Simple evaluation script for CoT RAG pipeline.
-
-Evaluation metrics:
-1. Quality Score Distribution - tracks LLM's own quality assessments
-2. Retrieved Relevance - checks if retrieved docs are from relevant set
-3. Answer Consistency - compares initial vs alternative answers (if generated)
-4. Retrieval Coverage - checks if all query variants retrieve similar docs
-5. Pipeline Efficiency - tracks number of API calls and comparisons made
-"""
-
 import json
 from pathlib import Path
 from typing import Dict, List, Tuple
 import statistics
-
-# Import from your existing code
 from src.rag import RAGPipeline
+from src.main import ChainOfThoughtRAG
 from src.utils import get_best_device, get_model
 from src.splade import SPLADEEncoder
 
 
 class RAGEvaluator:
-    """
-    Simple evaluator for RAG pipeline results.
-    """
-    
+
     def __init__(self, relevant_doc_ids: set):
-        """
-        Args:
-            relevant_doc_ids: Set of document IDs known to be relevant (from qrels)
-        """
         self.relevant_doc_ids = relevant_doc_ids
         self.results = []
     
     def evaluate_single_query(self, result: Dict, query_id: str = None) -> Dict:
         """
         Evaluate a single query result.
-        
-        Args:
-            result: Output dict from cot_rag.process_query()
-            query_id: Optional ID for tracking
-            
-        Returns:
-            Dictionary with evaluation metrics
         """
         evaluation = {
             "query_id": query_id,
@@ -102,13 +76,6 @@ class RAGEvaluator:
                       query_ids: List[str] = None) -> Dict:
         """
         Evaluate multiple query results.
-        
-        Args:
-            results_list: List of result dicts from process_query()
-            query_ids: Optional list of query IDs
-            
-        Returns:
-            Summary statistics across all queries
         """
         if query_ids is None:
             query_ids = [None] * len(results_list)
@@ -125,7 +92,6 @@ class RAGEvaluator:
         if not self.results:
             return {"error": "No results to summarize"}
         
-        # Extract all metrics
         quality_scores = [r["metrics"]["final_quality_score"] for r in self.results]
         relevance_ratios = [r["metrics"]["retrieved_relevance_ratio"] for r in self.results]
         consistency_scores = [r["metrics"]["answer_consistency"] for r in self.results]
@@ -213,25 +179,14 @@ def evaluate_on_test_set(rag: RAGPipeline, cot_rag,
                          use_alternatives: bool = True):
     """
     Evaluate pipeline on a subset of test queries.
-    
-    Args:
-        rag: RAGPipeline instance
-        cot_rag: ChainOfThoughtRAG instance
-        queries_df: DataFrame with queries (must have 'qid' and text columns)
-        qrels_df: DataFrame with relevance judgments
-        num_queries: Number of queries to evaluate
-        use_rewrites: Whether to use query rewriting
-        use_alternatives: Whether to generate alternative answers
     """
     from src.main import ChainOfThoughtRAG  # Import here to avoid circular deps
     
     # Get relevant doc IDs
     relevant_doc_ids = set(qrels_df["docno"].tolist())
     
-    # Initialize evaluator
     evaluator = RAGEvaluator(relevant_doc_ids)
     
-    # Get subset of queries
     query_ids = queries_df["qid"].tolist()[:num_queries]
     test_queries = queries_df[queries_df["qid"].isin(query_ids)]
     
@@ -241,7 +196,6 @@ def evaluate_on_test_set(rag: RAGPipeline, cot_rag,
     results = []
     for idx, row in test_queries.iterrows():
         qid = row["qid"]
-        # Handle different possible column names for query text
         query_text = row.get("query") or row.get("title") or row.get("text")
         
         print(f"\n[{idx+1}/{len(test_queries)}] Query {qid}: {query_text}")
@@ -251,11 +205,10 @@ def evaluate_on_test_set(rag: RAGPipeline, cot_rag,
                 query_text,
                 use_rewrites=use_rewrites,
                 use_alternatives=use_alternatives,
-                verbose=False  # Set to True if you want detailed output per query
+                verbose=False 
             )
             results.append(result)
             
-            # Quick eval
             eval_result = evaluator.evaluate_single_query(result, qid)
             print(f"  Quality: {eval_result['metrics']['final_quality_score']}/5 | "
                   f"Relevance: {eval_result['metrics']['retrieved_relevance_ratio']:.0%}")
@@ -264,7 +217,6 @@ def evaluate_on_test_set(rag: RAGPipeline, cot_rag,
             print(f"  ERROR: {e}")
             continue
     
-    # Print summary
     summary = evaluator.get_summary_stats()
     evaluator.print_summary(summary)
     
@@ -276,7 +228,6 @@ if __name__ == "__main__":
     
     print("Loading dataset and models...")
     
-    # Same setup as your main code
     dataset = pt.get_dataset("irds:lotte/technology/dev/search")
     index_path = Path("./outputs/practical-04/index_lotte").absolute()
     index_ref = str(index_path)
@@ -297,7 +248,6 @@ if __name__ == "__main__":
     relevant_doc_ids = set(qrels_df["docno"].tolist())
     doc_id_list = list(relevant_doc_ids)
     
-    # Initialize pipeline
     splade_encoder = SPLADEEncoder("naver/splade-cocondenser-ensembledistil")
     splade_encoder = splade_encoder.to(device)
     
@@ -311,11 +261,8 @@ if __name__ == "__main__":
         top_k=3,
     )
     
-    # Import ChainOfThoughtRAG from your code
-    from src.main import ChainOfThoughtRAG
     cot_rag = ChainOfThoughtRAG(rag, model, tokenizer, device)
     
-    # Run evaluation on first 5 queries
     print("\n" + "="*80)
     print("STARTING EVALUATION")
     print("="*80)
