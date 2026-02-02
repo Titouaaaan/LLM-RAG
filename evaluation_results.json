@@ -1,0 +1,778 @@
+{
+  "total_queries_evaluated": 50,
+  "quality_score": {
+    "mean": 3.68,
+    "median": 4.0,
+    "min": 2,
+    "max": 5,
+    "stdev": 0.6207303137828695
+  },
+  "retrieval_relevance": {
+    "mean_ratio": 1.0,
+    "median_ratio": 1.0,
+    "min_ratio": 1.0,
+    "max_ratio": 1.0
+  },
+  "answer_consistency": {
+    "mean_diff": 0.82,
+    "median_diff": 1.0,
+    "max_diff": 2
+  },
+  "pipeline_efficiency": {
+    "mean_cot_steps": 3.96,
+    "alternatives_generated": 49,
+    "alternatives_percentage": 98.0
+  },
+  "detailed_results": [
+    {
+      "query_id": "0",
+      "original_query": "how many devices can you connect to bluetooth?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "1",
+      "original_query": "how many devices can you connect with bluetooth?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "2",
+      "original_query": "how many watts does a computer fan draw?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "3",
+      "original_query": "is adsl analog or digital?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "4",
+      "original_query": "what is the difference between internet intranet extranet and vpn?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "5",
+      "original_query": "can you run two graphics cards at the same time?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "6",
+      "original_query": "can you dual two different graphics cards?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "7",
+      "original_query": "can you run two graphics cards at once?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "8",
+      "original_query": "can you have two different graphics cards in a pc?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "9",
+      "original_query": "do docking stations have mac addresses?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "10",
+      "original_query": "how to tell which domain controller you are connected to?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "11",
+      "original_query": "what dc am i connected to?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "12",
+      "original_query": "how to set different wallpapers on dual monitors windows 8.1?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "13",
+      "original_query": "hp docking station does not recognize mouse and keyboard?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "14",
+      "original_query": "how long does it take to transfer a terabyte of data?",
+      "metrics": {
+        "final_quality_score": 2,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "15",
+      "original_query": "how long does it take to transfer 1tb over usb 2.0?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "16",
+      "original_query": "is docx and dotx the same?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "17",
+      "original_query": "ping is not recognized as an internal or external command windows server 2008?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "18",
+      "original_query": "ping is not recognized as an internal command windows 10?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "19",
+      "original_query": "are all ip addresses unique?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "20",
+      "original_query": "what is the difference between image resolution and screen resolution?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "21",
+      "original_query": "what is the difference between screen resolution and image resolution?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "22",
+      "original_query": "what is the difference between core i3 first generation and second generation?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "23",
+      "original_query": "what is the difference between 1st generation and 2nd generation processor?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 2,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "24",
+      "original_query": "how does dvi splitter work?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "25",
+      "original_query": "how do dvi splitters work?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "26",
+      "original_query": "how to connect wireless xbox 360 controller to pc using bluetooth?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "27",
+      "original_query": "how to connect xbox 360 controller to bluetooth?",
+      "metrics": {
+        "final_quality_score": 2,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "28",
+      "original_query": "is my xbox 360 controller bluetooth?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "29",
+      "original_query": "do xbox 360 controllers have bluetooth?",
+      "metrics": {
+        "final_quality_score": 2,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "30",
+      "original_query": "can you delete vmdk files?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "31",
+      "original_query": "what is armhf and armel?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "32",
+      "original_query": "how do i move files from desktop to virtual machine?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "33",
+      "original_query": "how to transfer files from desktop to vm?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "34",
+      "original_query": "what is difference between function and formula?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "35",
+      "original_query": "what are the differences between formula and functions in excel?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "36",
+      "original_query": "what size are atx motherboard screws?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "37",
+      "original_query": "what is the difference between data and text?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "38",
+      "original_query": "how to copy excel spreadsheet without data?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "39",
+      "original_query": "are logical processors the same as cores?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "40",
+      "original_query": "is a service an application?",
+      "metrics": {
+        "final_quality_score": 5,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": false,
+        "comparison_made": false,
+        "num_query_variants": 3,
+        "cot_steps_performed": 2
+      }
+    },
+    {
+      "query_id": "41",
+      "original_query": "what is the difference between windows service and windows application?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "42",
+      "original_query": "how to copy and paste long file names?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "43",
+      "original_query": "user account is not authorized for remote login domain?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 2,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "44",
+      "original_query": "remote desktop connection denied because the user account is not authorized?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "45",
+      "original_query": "remote desktop connection manager the user account is not authorized for remote login?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "46",
+      "original_query": "what are msp files and can i delete them?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "47",
+      "original_query": "are msi files safe to delete?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "48",
+      "original_query": "can msp files be deleted?",
+      "metrics": {
+        "final_quality_score": 4,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 1,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    },
+    {
+      "query_id": "49",
+      "original_query": "access is denied windows vista?",
+      "metrics": {
+        "final_quality_score": 3,
+        "retrieved_relevance_ratio": 1.0,
+        "relevant_docs_retrieved": 3,
+        "total_docs_retrieved": 3,
+        "answer_consistency": 0,
+        "alternative_generated": true,
+        "comparison_made": true,
+        "num_query_variants": 3,
+        "cot_steps_performed": 4
+      }
+    }
+  ]
+}
