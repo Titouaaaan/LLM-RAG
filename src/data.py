@@ -26,7 +26,7 @@ def get_text_from_index(pt_index, doc_ids: list[str]) -> dict[str, str]:
     """Retrieve text for multiple documents from the index metadata."""
     result = {}
     try:
-        metadata = pt_index.getMetaIndex()
+        metadata = pt_index #.getMetaIndex()
         
         for doc_id in doc_ids:
             try:
