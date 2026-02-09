@@ -1,4 +1,4 @@
-# Enhanced RAG Pipeline with SPLADE Retrieval and Chain-of-Thought Reasoning
+# Enhanced RAG Pipeline with SPLADE Retrieval and Chain-of-Thought Reasoning:
 
 ## Overview
 
@@ -92,5 +92,6 @@ Ask a questions, wait for the answer and see for yourself! It's also interesting
 > At first you see an exmaple that runs on its own just to see how it works, it will probably be removed because it was mostly for debugging.
 
 ### Notes
+
 
 This project was done for my LLM class, it can for sure be improved and will be in the future. It is def not perfect or optimized, this is mostly experimental :)
