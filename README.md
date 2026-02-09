@@ -1,4 +1,4 @@
-# Enhanced RAG Pipeline with SPLADE Retrieval and Chain-of-Thought Reasoning:
+# Enhanced RAG Pipeline with SPLADE Retrieval and Chain-of-Thought Reasoning
 
 ## Overview
 
@@ -92,6 +92,11 @@ Ask a questions, wait for the answer and see for yourself! It's also interesting
 > At first you see an exmaple that runs on its own just to see how it works, it will probably be removed because it was mostly for debugging.
 
 ### Notes
+As of 09/02/2026, stopped working on the project, but it would be nice to fix the UI/Interactability of the RAG system, maybe a bit nicer if we want to actually test it.
+
+Also maybe run some tests to see how runnable it is locally based on the users system cuz the the moment it assumes you will just load the model and run inference locally.
+
 
 
 This project was done for my LLM class, it can for sure be improved and will be in the future. It is def not perfect or optimized, this is mostly experimental :)
+
